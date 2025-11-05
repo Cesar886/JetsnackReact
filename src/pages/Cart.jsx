@@ -8,10 +8,15 @@ import {
   Container,
   useMediaQuery,
   useTheme,
+  LinearProgress,
+  Chip,
+  Grid,
+  Badge,
 } from '@mui/material';
-import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, Truck, Lock, Tag } from 'lucide-react';
 import { useAppContext } from '../context/useAppContext';
 import JetsnackButton from '../components/common/JetsnackButton';
+import EmptyState from '../components/common/EmptyState';
 import { jetsnackColorPalette, jetsnackGradients } from '../theme/JetsnackTheme';
 
 export function Cart() {
@@ -19,242 +24,330 @@ export function Cart() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { cart, removeFromCart } = useAppContext();
 
-  const total = cart.reduce((sum, item) => sum + item.snack.price * item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.snack.price * item.quantity, 0);
+  const shipping = subtotal > 50 * 100 ? 0 : 5 * 100;
+  const tax = Math.round(subtotal * 0.1);
+  const total = subtotal + shipping + tax;
+  const progress = Math.min((subtotal / (50 * 100)) * 100, 100);
 
   if (cart.length === 0) {
     return (
-      <Box 
-        sx={{ 
-          pb: 10, 
-          textAlign: 'center', 
-          minHeight: '100vh', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          background: jetsnackGradients.surfaceGradient,
-        }}
-      >
-        <Box 
-          sx={{
-            width: 100,
-            height: 100,
-            borderRadius: '50%',
-            background: jetsnackGradients.brandGradient,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mb: 3,
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+      <Box sx={{ pb: 10, background: jetsnackGradients.surfaceGradient, minHeight: '100vh' }}>
+        <EmptyState
+          icon="🛒"
+          title="Carrito vacío"
+          message="¿Aún no has agregado snacks a tu carrito? ¡Exploralos ahora!"
+          action={{
+            label: 'Explorar Snacks',
+            onClick: () => window.location.href = '/',
+            icon: <ShoppingBag size={20} />,
           }}
-        >
-          <ShoppingBag size={50} color="white" />
-        </Box>
-        <Typography variant="h4" sx={{ mb: 1, fontWeight: 800 }}>
-          Carrito vacío
-        </Typography>
-        <Typography color="textSecondary" sx={{ mb: 3, maxWidth: 300 }}>
-          Agrega deliciosos snacks a tu carrito para continuar con tu compra
-        </Typography>
-        <Button
-          variant="contained"
-          sx={{
-            background: jetsnackGradients.brandGradient,
-            px: 4,
-            py: 1.5,
-          }}
-          href="/"
-        >
-          Explorar Snacks
-        </Button>
+          fullHeight={true}
+        />
       </Box>
     );
   }
 
   return (
     <Box sx={{ pb: 10, background: jetsnackGradients.surfaceGradient, minHeight: '100vh' }}>
-      {/* Header */}
+      {/* Header Mejorado */}
       <Box
         sx={{
           background: jetsnackGradients.brandGradient,
           color: 'white',
-          p: { xs: 2, sm: 3, md: 4 },
+          p: { xs: 2.5, sm: 3.5, md: 4.5 },
           mb: 4,
+          boxShadow: '0 8px 32px rgba(255, 87, 34, 0.15)',
         }}
       >
         <Container maxWidth="lg">
-          <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 800, mb: 1 }}>
-            🛒 Carrito de Compras
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                background: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <ShoppingBag size={28} />
+            </Box>
+            <div>
+              <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 900, mb: 0 }}>
+                Tu Carrito
+              </Typography>
+            </div>
+          </Box>
+          <Typography variant="body2" sx={{ opacity: 0.9, mb: 2 }}>
+            {cart.length} artículo{cart.length !== 1 ? 's' : ''} en el carrito
           </Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            {cart.length} artículo{cart.length !== 1 ? 's' : ''}
-          </Typography>
+
+          {/* Barra de progreso para envío gratis */}
+          <Box sx={{ mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'center' }}>
+              <Typography variant="caption" sx={{ opacity: 0.9, fontWeight: 700 }}>
+                🚚 {subtotal >= 50 * 100 ? '¡Envío Gratis Desbloqueado!' : `Falta $${((50 * 100 - subtotal) / 100).toFixed(2)} para envío gratis`}
+              </Typography>
+              <Typography variant="caption" sx={{ opacity: 0.9, fontWeight: 700 }}>
+                {progress.toFixed(0)}%
+              </Typography>
+            </Box>
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              sx={{
+                height: '8px',
+                borderRadius: '4px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                '& .MuiLinearProgress-bar': {
+                  background: 'linear-gradient(90deg, #FFFFFF 0%, rgba(255, 255, 255, 0.7) 100%)',
+                  borderRadius: '4px',
+                },
+              }}
+            />
+          </Box>
         </Container>
       </Box>
 
-      <Container maxWidth="md">
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 320px' }, gap: 3 }}>
+      <Container maxWidth="lg">
+        <Grid container spacing={3}>
           {/* Items del carrito */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {cart.map((item) => (
-              <Card
-                key={item.snack.id}
-                sx={{
-                  p: 2,
-                  display: 'flex',
-                  gap: 2,
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-                    transform: 'translateY(-2px)',
-                  },
-                }}
-              >
-                {/* Imagen */}
-                <Box
-                  component="img"
-                  src={item.snack.imageUrl}
-                  alt={item.snack.name}
+          <Grid item xs={12} md={8}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {cart.map((item, index) => (
+                <Card
+                  key={item.snack.id}
                   sx={{
-                    width: { xs: 80, sm: 120 },
-                    height: { xs: 80, sm: 120 },
-                    objectFit: 'cover',
-                    borderRadius: '12px',
-                    flexShrink: 0,
+                    p: { xs: 1.5, sm: 2.5 },
+                    display: 'flex',
+                    gap: { xs: 1.5, sm: 2.5 },
+                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    animation: `slideInUp 0.5s ease-out ${index * 0.1}s both`,
+                    '&:hover': {
+                      boxShadow: '0 12px 32px rgba(0, 0, 0, 0.12)',
+                      transform: 'translateY(-4px)',
+                    },
                   }}
-                />
+                >
+                  {/* Imagen */}
+                  <Box
+                    component="img"
+                    src={item.snack.imageUrl}
+                    alt={item.snack.name}
+                    sx={{
+                      width: { xs: 90, sm: 140 },
+                      height: { xs: 90, sm: 140 },
+                      objectFit: 'cover',
+                      borderRadius: '14px',
+                      flexShrink: 0,
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                    }}
+                  />
 
-                {/* Contenido */}
-                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <Box>
+                  {/* Contenido */}
+                  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
+                    <Box>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 1 }}>
+                        <Typography 
+                          variant={isMobile ? 'body2' : 'body1'} 
+                          sx={{ fontWeight: 800, mb: 0.5, color: jetsnackColorPalette.textPrimary }}
+                        >
+                          {item.snack.name}
+                        </Typography>
+                        {item.snack.isPremium && (
+                          <Chip
+                            label="Premium"
+                            size="small"
+                            sx={{
+                              background: jetsnackGradients.brandGradient,
+                              color: 'white',
+                              fontWeight: 700,
+                              height: 'auto',
+                              fontSize: '0.7rem',
+                            }}
+                          />
+                        )}
+                      </Box>
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          color: jetsnackColorPalette.textTertiary,
+                          display: 'block',
+                          mb: 1,
+                          fontWeight: 600,
+                        }}
+                      >
+                        ${(item.snack.price / 100).toFixed(2)} c/u
+                      </Typography>
+                    </Box>
+
+                    {/* Controles */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <IconButton size="small" disabled sx={{ opacity: 0.5 }}>
+                        <Minus size={16} />
+                      </IconButton>
+                      <Box 
+                        sx={{ 
+                          fontWeight: 800, 
+                          minWidth: '40px', 
+                          textAlign: 'center',
+                          px: 1.5,
+                          py: 0.75,
+                          backgroundColor: jetsnackColorPalette.surface2,
+                          borderRadius: '8px',
+                          color: jetsnackColorPalette.textPrimary,
+                        }}
+                      >
+                        {item.quantity}
+                      </Box>
+                      <IconButton size="small" disabled sx={{ opacity: 0.5 }}>
+                        <Plus size={16} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+
+                  {/* Precio y eliminar */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between', gap: 2 }}>
                     <Typography 
-                      variant={isMobile ? 'body2' : 'body1'} 
-                      sx={{ fontWeight: 700, mb: 0.5 }}
-                    >
-                      {item.snack.name}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
+                      variant="h6" 
                       sx={{ 
-                        color: jetsnackColorPalette.textTertiary,
-                        display: 'block',
-                        mb: 1,
+                        fontWeight: 900,
+                        background: jetsnackGradients.brandGradient,
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
                       }}
                     >
-                      ${(item.snack.price / 100).toFixed(2)} c/u
+                      ${((item.snack.price * item.quantity) / 100).toFixed(2)}
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      onClick={() => removeFromCart(item.snack.id)}
+                      sx={{ 
+                        color: jetsnackColorPalette.error,
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                          transform: 'scale(1.1)',
+                        },
+                      }}
+                    >
+                      <Trash2 size={18} />
+                    </IconButton>
+                  </Box>
+                </Card>
+              ))}
+            </Box>
+          </Grid>
+
+          {/* Resumen (sticky en desktop) */}
+          <Grid item xs={12} md={4}>
+            <Box sx={{ height: 'fit-content', position: { md: 'sticky' }, top: 100 }}>
+              <Card
+                sx={{
+                  p: 3,
+                  background: 'linear-gradient(135deg, #FFFFFF 0%, #FAFBFC 100%)',
+                  border: `1px solid ${jetsnackColorPalette.border}`,
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 900, mb: 2.5, color: jetsnackColorPalette.textPrimary }}>
+                  Resumen del Pedido
+                </Typography>
+
+                {/* Detalles */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mb: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 600 }}>
+                      Subtotal ({cart.length} item{cart.length !== 1 ? 's' : ''}):
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                      ${(subtotal / 100).toFixed(2)}
                     </Typography>
                   </Box>
 
-                  {/* Controles de cantidad */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <IconButton size="small" disabled>
-                      <Minus size={16} />
-                    </IconButton>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Truck size={16} color={jetsnackColorPalette.success} />
+                      <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 600 }}>
+                        Envío:
+                      </Typography>
+                    </Box>
                     <Typography 
+                      variant="body2" 
                       sx={{ 
                         fontWeight: 700, 
-                        minWidth: '24px', 
-                        textAlign: 'center',
-                        px: 1,
-                        py: 0.5,
-                        backgroundColor: jetsnackColorPalette.surface2,
-                        borderRadius: '6px',
+                        color: shipping === 0 ? jetsnackColorPalette.success : jetsnackColorPalette.textPrimary 
                       }}
                     >
-                      {item.quantity}
+                      {shipping === 0 ? '¡Gratis!' : `$${(shipping / 100).toFixed(2)}`}
                     </Typography>
-                    <IconButton size="small" disabled>
-                      <Plus size={16} />
-                    </IconButton>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 600 }}>
+                      Impuesto (10%):
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                      ${(tax / 100).toFixed(2)}
+                    </Typography>
                   </Box>
                 </Box>
 
-                {/* Precio y botón eliminar */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                <Divider sx={{ my: 2 }} />
+
+                {/* Total */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography sx={{ fontWeight: 900, fontSize: '1.1rem', color: jetsnackColorPalette.textPrimary }}>
+                    Total:
+                  </Typography>
                   <Typography 
-                    variant="body1" 
                     sx={{ 
-                      fontWeight: 800,
+                      fontWeight: 900, 
+                      fontSize: '1.5rem',
                       background: jetsnackGradients.brandGradient,
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                     }}
                   >
-                    ${((item.snack.price * item.quantity) / 100).toFixed(2)}
+                    ${(total / 100).toFixed(2)}
                   </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => removeFromCart(item.snack.id)}
-                    sx={{ 
-                      color: jetsnackColorPalette.brand,
-                      '&:hover': {
-                        backgroundColor: jetsnackColorPalette.brandLight,
-                      },
-                    }}
-                  >
-                    <Trash2 size={18} />
-                  </IconButton>
+                </Box>
+
+                {/* Botón de pago */}
+                <JetsnackButton fullWidth sx={{ mb: 2, py: 1.5 }}>
+                  <Lock size={18} style={{ marginRight: '8px' }} />
+                  Proceder al Pago Seguro
+                </JetsnackButton>
+
+                {/* Beneficios */}
+                <Box sx={{ 
+                  p: 2, 
+                  background: jetsnackColorPalette.brandLight, 
+                  borderRadius: '12px',
+                  border: `1px solid ${jetsnackColorPalette.brand}20`,
+                }}>
+                  <Box sx={{ display: 'flex', gap: 1.5, mb: 1.5 }}>
+                    <Tag size={18} color={jetsnackColorPalette.brand} />
+                    <div>
+                      <Typography variant="caption" sx={{ fontWeight: 900, color: jetsnackColorPalette.brand }}>
+                        Obtén 10% de recompensas
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: jetsnackColorPalette.textSecondary, display: 'block' }}>
+                        En tu próxima compra
+                      </Typography>
+                    </div>
+                  </Box>
                 </Box>
               </Card>
-            ))}
-          </Box>
-
-          {/* Resumen (sticky en desktop) */}
-          <Box sx={{ height: 'fit-content', position: { md: 'sticky' }, top: 80 }}>
-            <Card
-              sx={{
-                p: 3,
-                background: jetsnackGradients.surfaceGradient,
-                border: `1px solid ${jetsnackColorPalette.border}`,
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 2 }}>
-                Resumen
-              </Typography>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                <Typography variant="body2" color="textSecondary">
-                  Subtotal:
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  ${(total / 100).toFixed(2)}
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                <Typography variant="body2" color="textSecondary">
-                  Envío:
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: jetsnackColorPalette.success }}>
-                  Gratis
-                </Typography>
-              </Box>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                <Typography sx={{ fontWeight: 800 }}>Total:</Typography>
-                <Typography 
-                  sx={{ 
-                    fontWeight: 800, 
-                    fontSize: '1.3rem',
-                    background: jetsnackGradients.brandGradient,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  ${(total / 100).toFixed(2)}
-                </Typography>
-              </Box>
-
-              <JetsnackButton fullWidth>
-                Proceder al Pago
-              </JetsnackButton>
-            </Card>
-          </Box>
-        </Box>
+            </Box>
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );
