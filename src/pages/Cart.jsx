@@ -16,7 +16,6 @@ import {
 import { Trash2, Plus, Minus, ShoppingBag, Truck, Lock, Tag } from 'lucide-react';
 import { useAppContext } from '../context/useAppContext';
 import JetsnackButton from '../components/common/JetsnackButton';
-import EmptyState from '../components/common/EmptyState';
 import { jetsnackColorPalette, jetsnackGradients } from '../theme/JetsnackTheme';
 
 export function Cart() {
@@ -32,18 +31,71 @@ export function Cart() {
 
   if (cart.length === 0) {
     return (
-      <Box sx={{ pb: 10, background: jetsnackGradients.surfaceGradient, minHeight: '100vh' }}>
-        <EmptyState
-          icon="🛒"
-          title="Carrito vacío"
-          message="¿Aún no has agregado snacks a tu carrito? ¡Exploralos ahora!"
-          action={{
-            label: 'Explorar Snacks',
-            onClick: () => window.location.href = '/',
-            icon: <ShoppingBag size={20} />,
+      <Box sx={{ pb: 10, background: jetsnackGradients.surfaceGradient, minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', px: 2 }}>
+        {/* Icono */}
+        <Box
+          sx={{
+            width: { xs: 100, sm: 150 },
+            height: { xs: 100, sm: 150 },
+            background: jetsnackGradients.brandGradient,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: { xs: '3rem', sm: '4rem' },
+            mb: 3,
+            boxShadow: '0 12px 32px rgba(255, 87, 34, 0.15)',
+            animation: 'float 3s ease-in-out infinite',
           }}
-          fullHeight={true}
-        />
+        >
+          🛒
+        </Box>
+
+        {/* Título */}
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 900,
+            color: jetsnackColorPalette.textPrimary,
+            mb: 1.5,
+          }}
+        >
+          Carrito vacío
+        </Typography>
+
+        {/* Mensaje */}
+        <Typography
+          variant="body1"
+          sx={{
+            color: jetsnackColorPalette.textSecondary,
+            maxWidth: '400px',
+            mb: 3,
+            fontSize: '1.05rem',
+          }}
+        >
+          ¿Aún no has agregado snacks a tu carrito? ¡Exploralos ahora!
+        </Typography>
+
+        {/* Botón */}
+        <Button
+          variant="contained"
+          onClick={() => window.location.href = '/'}
+          startIcon={<ShoppingBag size={20} />}
+          sx={{
+            background: jetsnackGradients.brandGradient,
+            px: 4,
+            py: 1.5,
+            fontSize: '1rem',
+            fontWeight: 700,
+            boxShadow: '0 8px 20px rgba(255, 87, 34, 0.25)',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: '0 12px 32px rgba(255, 87, 34, 0.35)',
+            },
+          }}
+        >
+          Explorar Snacks
+        </Button>
       </Box>
     );
   }
