@@ -1,12 +1,13 @@
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, IconButton, Divider, useMediaQuery, useTheme, Chip } from '@mui/material';
-import { ArrowLeft, Heart, Minus, Plus, Star, Zap, Award } from 'lucide-react';
+import { Box, Typography, IconButton, Divider, useMediaQuery, useTheme, Chip, Rating, Card, Grid, Container } from '@mui/material';
+import { ArrowLeft, Heart, Minus, Plus, Star, Zap, Award, Check, Truck, Lock, RefreshCw, ShoppingBag } from 'lucide-react';
 import { useSnackRepository } from '../hooks/useSnackRepository';
 import { useAppContext } from '../context/useAppContext';
 import JetsnackSurface from '../components/common/JetsnackSurface';
 import JetsnackButton from '../components/common/JetsnackButton';
 import SnackCollection from '../components/snacks/SnackCollection';
+import NotificationPopup from '../components/common/NotificationPopup';
 import { jetsnackColorPalette, jetsnackGradients } from '../theme/JetsnackTheme';
 
 const MinTitleOffset = 56;
@@ -27,6 +28,12 @@ export function SnackDetail() {
 
   const [quantity, setQuantity] = useState(1);
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [notification, setNotification] = useState({
+    open: false,
+    type: 'success',
+    title: '',
+    message: '',
+  });
   const scrollRef = useRef(null);
 
   if (!snack) {
@@ -46,8 +53,12 @@ export function SnackDetail() {
 
   const handleAddToCart = () => {
     addToCart(snack, quantity);
-    // Mostrar confirmación
-    alert(`${quantity} ${snack.name}(s) agregado(s) al carrito`);
+    setNotification({
+      open: true,
+      type: 'success',
+      title: '¡Agregado al carrito!',
+      message: `${quantity} ${snack.name}${quantity > 1 ? 's' : ''} ha sido agregado(s)`,
+    });
   };
 
   return (
@@ -71,10 +82,10 @@ export function SnackDetail() {
           justifyContent: 'space-between',
           alignItems: 'center',
           p: { xs: 1, sm: 1.5, md: 2 },
-          backgroundColor: `rgba(255, 255, 255, ${Math.min(scrollOffset / 300, 0.95)})`,
-          backdropFilter: `blur(${Math.min(scrollOffset / 100, 10)}px)`,
-          borderBottom: `1px solid ${jetsnackColorPalette.border}`,
-          boxShadow: scrollOffset > 50 ? '0 4px 12px rgba(0, 0, 0, 0.08)' : 'none',
+          backgroundColor: `rgba(255, 255, 255, ${Math.min(scrollOffset / 300, 0.98)})`,
+          backdropFilter: `blur(${Math.min(scrollOffset / 100, 12)}px)`,
+          borderBottom: `1px solid ${scrollOffset > 50 ? jetsnackColorPalette.border : 'transparent'}`,
+          boxShadow: scrollOffset > 50 ? '0 8px 24px rgba(0, 0, 0, 0.08)' : 'none',
           transition: 'all 0.2s ease-in-out',
         }}
       >
@@ -83,9 +94,13 @@ export function SnackDetail() {
           size={isMobile ? 'small' : 'medium'}
           sx={{
             transition: 'all 0.3s ease',
+            backgroundColor: 'rgba(255, 107, 53, 0.08)',
             '&:hover': {
               transform: 'scale(1.1)',
               backgroundColor: jetsnackColorPalette.brandLight,
+            },
+            '&:active': {
+              transform: 'scale(0.95)',
             }
           }}
         >
@@ -94,7 +109,7 @@ export function SnackDetail() {
         <Typography
           variant={isMobile ? 'body2' : 'body1'}
           sx={{
-            fontWeight: 'bold',
+            fontWeight: 900,
             opacity: Math.min(scrollOffset / 300, 1),
             transition: 'opacity 0.2s ease-in-out',
             textAlign: 'center',
@@ -103,23 +118,42 @@ export function SnackDetail() {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
+            color: jetsnackColorPalette.textPrimary,
           }}
         >
           {snack.name}
         </Typography>
-        <IconButton
-          onClick={() => toggleFavorite(snack.id)}
-          size={isMobile ? 'small' : 'medium'}
-          sx={{ 
-            color: isFavorite ? jetsnackColorPalette.brand : 'gray',
-            transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            '&:hover': {
-              transform: 'scale(1.2) rotate(15deg)',
-            }
-          }}
-        >
-          <Heart size={isMobile ? 18 : 20} fill={isFavorite ? jetsnackColorPalette.brand : 'none'} />
-        </IconButton>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Typography
+            sx={{
+              fontWeight: 900,
+              background: jetsnackGradients.brandGradient,
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              opacity: Math.min(scrollOffset / 300, 1),
+              transition: 'opacity 0.2s',
+              fontSize: { xs: '0.9rem', sm: '1rem' }
+            }}
+          >
+            ${(snack.price / 100).toFixed(2)}
+          </Typography>
+          <IconButton
+            onClick={() => toggleFavorite(snack.id)}
+            size={isMobile ? 'small' : 'medium'}
+            sx={{ 
+              color: isFavorite ? jetsnackColorPalette.brand : 'gray',
+              backgroundColor: isFavorite ? 'rgba(255, 107, 53, 0.08)' : 'transparent',
+              transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              '&:hover': {
+                transform: 'scale(1.2) rotate(15deg)',
+                backgroundColor: 'rgba(255, 107, 53, 0.12)',
+              }
+            }}
+          >
+            <Heart size={isMobile ? 18 : 20} fill={isFavorite ? jetsnackColorPalette.brand : 'none'} />
+          </IconButton>
+        </Box>
       </Box>
 
       {/* Imagen Hero Mejorada */}
@@ -309,6 +343,85 @@ export function SnackDetail() {
               cada uno
             </Typography>
           </Box>
+
+          {/* Beneficios del Producto */}
+          <Grid container spacing={1.5} sx={{ mt: 1 }}>
+            <Grid item xs={6} sm={4}>
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: '12px',
+                  background: 'rgba(255, 107, 53, 0.08)',
+                  border: `1px solid rgba(255, 107, 53, 0.2)`,
+                  textAlign: 'center',
+                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    background: 'rgba(255, 107, 53, 0.12)',
+                    boxShadow: '0 12px 24px rgba(255, 107, 53, 0.12)',
+                  }
+                }}
+              >
+                <Truck size={20} color={jetsnackColorPalette.brand} style={{ marginBottom: '6px', display: 'block', margin: '0 auto 6px' }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, color: jetsnackColorPalette.textPrimary, display: 'block' }}>
+                  Envío Gratis
+                </Typography>
+                <Typography variant="caption" sx={{ fontSize: '0.65rem', color: jetsnackColorPalette.textSecondary }}>
+                  Mayoría de compras
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: '12px',
+                  background: 'rgba(102, 204, 153, 0.08)',
+                  border: `1px solid rgba(102, 204, 153, 0.2)`,
+                  textAlign: 'center',
+                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    background: 'rgba(102, 204, 153, 0.12)',
+                    boxShadow: '0 12px 24px rgba(102, 204, 153, 0.12)',
+                  }
+                }}
+              >
+                <Lock size={20} color="#66cc99" style={{ marginBottom: '6px', display: 'block', margin: '0 auto 6px' }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, color: jetsnackColorPalette.textPrimary, display: 'block' }}>
+                  Pago Seguro
+                </Typography>
+                <Typography variant="caption" sx={{ fontSize: '0.65rem', color: jetsnackColorPalette.textSecondary }}>
+                  Encriptado SSL
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: '12px',
+                  background: 'rgba(100, 200, 255, 0.08)',
+                  border: `1px solid rgba(100, 200, 255, 0.2)`,
+                  textAlign: 'center',
+                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    background: 'rgba(100, 200, 255, 0.12)',
+                    boxShadow: '0 12px 24px rgba(100, 200, 255, 0.12)',
+                  }
+                }}
+              >
+                <RefreshCw size={20} color="#64c8ff" style={{ marginBottom: '6px', display: 'block', margin: '0 auto 6px' }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, color: jetsnackColorPalette.textPrimary, display: 'block' }}>
+                  Devoluciones
+                </Typography>
+                <Typography variant="caption" sx={{ fontSize: '0.65rem', color: jetsnackColorPalette.textSecondary }}>
+                  Hasta 30 días
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
         </Box>
 
         <Divider sx={{ my: { xs: 1.5, sm: 2 }, opacity: 0.3 }} />
@@ -329,28 +442,38 @@ export function SnackDetail() {
               DESCRIPCIÓN PREMIUM
             </Typography>
           </Box>
-          <Typography
-            variant="body2"
+          <Card
             sx={{
-              color: jetsnackColorPalette.textSecondary,
-              lineHeight: 1.7,
-              fontSize: { xs: 'clamp(0.85rem, 2vw, 0.95rem)', sm: '0.95rem' },
+              background: jetsnackColorPalette.surface2,
+              border: `1px solid ${jetsnackColorPalette.border}`,
+              p: { xs: 1.5, sm: 2 },
+              mb: 2,
             }}
           >
-            Disfruta de este delicioso {snack.name}. Hecho con ingredientes premium
-            seleccionados cuidadosamente. {snack.tagline} 
-            <br />
-            <br />
-            Cada producto está elaborado artesanalmente con las mejores técnicas de pastelería 
-            moderna para garantizar una experiencia única en cada bocado.
-          </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: jetsnackColorPalette.textSecondary,
+                lineHeight: 1.8,
+                fontSize: { xs: 'clamp(0.85rem, 2vw, 0.95rem)', sm: '0.95rem' },
+              }}
+            >
+              Disfruta de este delicioso {snack.name}. Hecho con ingredientes premium
+              seleccionados cuidadosamente. {snack.tagline} 
+              <br />
+              <br />
+              Cada producto está elaborado artesanalmente con las mejores técnicas de pastelería 
+              moderna para garantizar una experiencia única en cada bocado. Nuestro compromiso es ofrecerte
+              la máxima calidad y sabor en cada compra.
+            </Typography>
+          </Card>
         </Box>
 
         <Divider sx={{ my: { xs: 1.5, sm: 2 }, opacity: 0.3 }} />
 
         {/* Ingredientes Mejorado */}
         <Box sx={{ px: { xs: 2, sm: 2.5, md: 3.5 }, py: { xs: 1.5, sm: 2, md: 2.5 } }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <Zap size={18} color={jetsnackColorPalette.brand} />
             <Typography
               variant="subtitle2"
@@ -361,32 +484,117 @@ export function SnackDetail() {
                 letterSpacing: '0.5px',
               }}
             >
-              INGREDIENTES
+              INGREDIENTES NATURALES
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            {['Azúcar', 'Harina', 'Huevos', 'Mantequilla', 'Vainilla', 'Chocolate'].map((ing) => (
-              <Chip
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' },
+              gap: 1.5,
+            }}
+          >
+            {['Azúcar', 'Harina', 'Huevos', 'Mantequilla', 'Vainilla', 'Chocolate'].map((ing, idx) => (
+              <Box
                 key={ing}
-                label={ing}
-                variant="outlined"
                 sx={{
-                  borderColor: jetsnackColorPalette.brand,
-                  color: jetsnackColorPalette.brand,
-                  fontWeight: 600,
-                  fontSize: '0.8rem',
+                  p: 1.5,
+                  borderRadius: '10px',
+                  background: jetsnackColorPalette.surface2,
+                  border: `1.5px solid ${jetsnackColorPalette.brand}40`,
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  animation: `fadeIn 0.5s ease ${idx * 0.08}s both`,
                   '&:hover': {
+                    transform: 'translateY(-4px)',
                     background: jetsnackColorPalette.brandLight,
+                    borderColor: jetsnackColorPalette.brand,
                   }
                 }}
-              />
+              >
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    color: jetsnackColorPalette.brand,
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {ing}
+                </Typography>
+              </Box>
             ))}
           </Box>
         </Box>
 
         <Divider sx={{ my: { xs: 1.5, sm: 2 }, opacity: 0.3 }} />
 
-        {/* Productos relacionados */}
+        {/* Reseñas de Clientes */}
+        <Box sx={{ px: { xs: 2, sm: 2.5, md: 3.5 }, py: { xs: 1.5, sm: 2, md: 2.5 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <Star size={18} color={jetsnackColorPalette.brand} />
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: jetsnackColorPalette.brand,
+                fontWeight: 900,
+                fontSize: '0.8rem',
+                letterSpacing: '0.5px',
+              }}
+            >
+              CALIFICACIÓN DE CLIENTES
+            </Typography>
+          </Box>
+          
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Card
+                sx={{
+                  p: 2,
+                  background: 'rgba(255, 107, 53, 0.04)',
+                  border: `1px solid rgba(255, 107, 53, 0.1)`,
+                  textAlign: 'center',
+                }}
+              >
+                <Typography variant="h4" sx={{ fontWeight: 900, color: jetsnackColorPalette.brand, mb: 0.5 }}>
+                  4.8
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 0.5 }}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={16}
+                      fill={jetsnackColorPalette.brand}
+                      color={jetsnackColorPalette.brand}
+                    />
+                  ))}
+                </Box>
+                <Typography variant="caption" sx={{ color: jetsnackColorPalette.textSecondary }}>
+                  Basado en 1,247 reseñas
+                </Typography>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Card
+                sx={{
+                  p: 2,
+                  background: 'rgba(102, 204, 153, 0.04)',
+                  border: `1px solid rgba(102, 204, 153, 0.1)`,
+                  textAlign: 'center',
+                }}
+              >
+                <Typography variant="h4" sx={{ fontWeight: 900, color: '#66cc99', mb: 0.5 }}>
+                  ✓ Recomendado
+                </Typography>
+                <Typography variant="body2" sx={{ color: jetsnackColorPalette.textSecondary, mb: 0.5 }}>
+                  94% lo recomendaría
+                </Typography>
+                <Typography variant="caption" sx={{ color: jetsnackColorPalette.textSecondary }}>
+                  De clientes verificados
+                </Typography>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
         <Box sx={{ px: { xs: 2, sm: 2.5, md: 3.5 }, py: { xs: 1.5, sm: 2, md: 2.5 } }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <Star size={18} color={jetsnackColorPalette.brand} />
@@ -506,20 +714,46 @@ export function SnackDetail() {
             p: { xs: '14px 20px', sm: '16px 28px', md: '18px 32px' },
             whiteSpace: 'nowrap',
             fontWeight: 900,
-            boxShadow: `0 8px 24px rgba(255, 87, 34, 0.3)`,
+            letterSpacing: '0.5px',
+            background: jetsnackGradients.brandGradient,
+            boxShadow: `0 12px 32px rgba(255, 107, 53, 0.28)`,
+            position: 'relative',
+            overflow: 'hidden',
             transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: '-100%',
+              width: '100%',
+              height: '100%',
+              background: 'rgba(255, 255, 255, 0.15)',
+              transition: 'left 0.4s ease',
+            },
             '&:hover': {
               transform: 'translateY(-2px)',
-              boxShadow: `0 12px 32px rgba(255, 87, 34, 0.4)`,
+              boxShadow: `0 16px 40px rgba(255, 107, 53, 0.35)`,
+              '&::before': {
+                left: '100%',
+              }
             },
             '&:active': {
               transform: 'translateY(0)',
             }
           }}
         >
-          {isMobile ? '➕ Agregar' : '🛒 Agregar al Carrito'}
+          <ShoppingBag size={18} style={{ marginRight: '8px' }} />
+          Agregar al carrito
         </JetsnackButton>
       </Box>
+
+      <NotificationPopup
+        open={notification.open}
+        onClose={() => setNotification({ ...notification, open: false })}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
     </Box>
   );
 }
