@@ -156,7 +156,7 @@ export function SnackDetail() {
         </Box>
       </Box>
 
-      {/* Imagen Hero Mejorada */}
+      {/* Imagen Hero Mejorada con más efectos */}
       <Box
         sx={{
           position: 'relative',
@@ -171,7 +171,7 @@ export function SnackDetail() {
           justifyContent: 'center',
         }}
       >
-        {/* Decoración de fondo */}
+        {/* Múltiples decoraciones de fondo */}
         <Box
           sx={{
             position: 'absolute',
@@ -185,19 +185,42 @@ export function SnackDetail() {
             animation: 'float 6s ease-in-out infinite',
           }}
         />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '-30%',
+            left: '-5%',
+            width: '250px',
+            height: '250px',
+            background: `radial-gradient(circle, ${snack.color || jetsnackColorPalette.accent}15 0%, transparent 70%)`,
+            borderRadius: '50%',
+            filter: 'blur(35px)',
+            animation: 'float 8s ease-in-out infinite reverse',
+          }}
+        />
         
         <Box
           component="img"
           src={snack.imageUrl}
           alt={snack.name}
           sx={{
-            width: { xs: '100%', sm: '80%' },
-            height: { xs: '100%', sm: '80%' },
+            width: { xs: '90%', sm: '75%' },
+            height: { xs: '90%', sm: '75%' },
             objectFit: 'contain',
             opacity: imageOpacity,
-            transition: 'opacity 0.1s ease-out',
+            transition: 'opacity 0.1s ease-out, transform 0.3s ease-out',
             zIndex: 2,
-            filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.2))',
+            filter: 'drop-shadow(0 20px 50px rgba(0, 0, 0, 0.25))',
+            '&:hover': {
+              transform: 'scale(1.05)',
+            },
+            '@keyframes': {
+              slideDown: {
+                '0%': { transform: 'translateY(-20px)', opacity: 0 },
+                '100%': { transform: 'translateY(0)', opacity: 1 },
+              }
+            },
+            animation: 'slideDown 0.6s ease-out',
           }}
         />
         
@@ -208,8 +231,8 @@ export function SnackDetail() {
             top: 0,
             left: 0,
             right: 0,
-            height: '60px',
-            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, transparent 100%)',
+            height: '80px',
+            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%)',
             pointerEvents: 'none',
             zIndex: 3,
           }}
@@ -222,8 +245,8 @@ export function SnackDetail() {
             bottom: 0,
             left: 0,
             right: 0,
-            height: '80px',
-            background: `linear-gradient(180deg, transparent 0%, ${snack.color || jetsnackColorPalette.brand}30 100%)`,
+            height: '100px',
+            background: `linear-gradient(180deg, transparent 0%, ${snack.color || jetsnackColorPalette.brand}40 100%)`,
             pointerEvents: 'none',
             zIndex: 1,
           }}
@@ -344,25 +367,42 @@ export function SnackDetail() {
             </Typography>
           </Box>
 
-          {/* Beneficios del Producto */}
+          {/* Beneficios del Producto con más estilo */}
           <Grid container spacing={1.5} sx={{ mt: 1 }}>
             <Grid item xs={6} sm={4}>
               <Box
                 sx={{
                   p: 1.5,
-                  borderRadius: '12px',
-                  background: 'rgba(255, 107, 53, 0.08)',
-                  border: `1px solid rgba(255, 107, 53, 0.2)`,
+                  borderRadius: '14px',
+                  background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(255, 107, 53, 0.04) 100%)',
+                  border: `2px solid rgba(255, 107, 53, 0.2)`,
                   textAlign: 'center',
-                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%)',
+                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
+                  },
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    background: 'rgba(255, 107, 53, 0.12)',
-                    boxShadow: '0 12px 24px rgba(255, 107, 53, 0.12)',
+                    transform: 'translateY(-6px)',
+                    background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.14) 0%, rgba(255, 107, 53, 0.08) 100%)',
+                    boxShadow: '0 16px 32px rgba(255, 107, 53, 0.16)',
+                    borderColor: 'rgba(255, 107, 53, 0.4)',
+                    '&::before': {
+                      opacity: 1,
+                    }
                   }
                 }}
               >
-                <Truck size={20} color={jetsnackColorPalette.brand} style={{ marginBottom: '6px', display: 'block', margin: '0 auto 6px' }} />
+                <Truck size={24} color={jetsnackColorPalette.brand} style={{ marginBottom: '8px', display: 'block', margin: '0 auto 8px' }} />
                 <Typography variant="caption" sx={{ fontWeight: 700, color: jetsnackColorPalette.textPrimary, display: 'block' }}>
                   Envío Gratis
                 </Typography>
@@ -375,19 +415,36 @@ export function SnackDetail() {
               <Box
                 sx={{
                   p: 1.5,
-                  borderRadius: '12px',
-                  background: 'rgba(102, 204, 153, 0.08)',
-                  border: `1px solid rgba(102, 204, 153, 0.2)`,
+                  borderRadius: '14px',
+                  background: 'linear-gradient(135deg, rgba(102, 204, 153, 0.08) 0%, rgba(102, 204, 153, 0.04) 100%)',
+                  border: `2px solid rgba(102, 204, 153, 0.2)`,
                   textAlign: 'center',
-                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%)',
+                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
+                  },
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    background: 'rgba(102, 204, 153, 0.12)',
-                    boxShadow: '0 12px 24px rgba(102, 204, 153, 0.12)',
+                    transform: 'translateY(-6px)',
+                    background: 'linear-gradient(135deg, rgba(102, 204, 153, 0.14) 0%, rgba(102, 204, 153, 0.08) 100%)',
+                    boxShadow: '0 16px 32px rgba(102, 204, 153, 0.16)',
+                    borderColor: 'rgba(102, 204, 153, 0.4)',
+                    '&::before': {
+                      opacity: 1,
+                    }
                   }
                 }}
               >
-                <Lock size={20} color="#66cc99" style={{ marginBottom: '6px', display: 'block', margin: '0 auto 6px' }} />
+                <Lock size={24} color="#66cc99" style={{ marginBottom: '8px', display: 'block', margin: '0 auto 8px' }} />
                 <Typography variant="caption" sx={{ fontWeight: 700, color: jetsnackColorPalette.textPrimary, display: 'block' }}>
                   Pago Seguro
                 </Typography>
@@ -400,19 +457,36 @@ export function SnackDetail() {
               <Box
                 sx={{
                   p: 1.5,
-                  borderRadius: '12px',
-                  background: 'rgba(100, 200, 255, 0.08)',
-                  border: `1px solid rgba(100, 200, 255, 0.2)`,
+                  borderRadius: '14px',
+                  background: 'linear-gradient(135deg, rgba(100, 200, 255, 0.08) 0%, rgba(100, 200, 255, 0.04) 100%)',
+                  border: `2px solid rgba(100, 200, 255, 0.2)`,
                   textAlign: 'center',
-                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%)',
+                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
+                  },
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    background: 'rgba(100, 200, 255, 0.12)',
-                    boxShadow: '0 12px 24px rgba(100, 200, 255, 0.12)',
+                    transform: 'translateY(-6px)',
+                    background: 'linear-gradient(135deg, rgba(100, 200, 255, 0.14) 0%, rgba(100, 200, 255, 0.08) 100%)',
+                    boxShadow: '0 16px 32px rgba(100, 200, 255, 0.16)',
+                    borderColor: 'rgba(100, 200, 255, 0.4)',
+                    '&::before': {
+                      opacity: 1,
+                    }
                   }
                 }}
               >
-                <RefreshCw size={20} color="#64c8ff" style={{ marginBottom: '6px', display: 'block', margin: '0 auto 6px' }} />
+                <RefreshCw size={24} color="#64c8ff" style={{ marginBottom: '8px', display: 'block', margin: '0 auto 8px' }} />
                 <Typography variant="caption" sx={{ fontWeight: 700, color: jetsnackColorPalette.textPrimary, display: 'block' }}>
                   Devoluciones
                 </Typography>
@@ -471,7 +545,7 @@ export function SnackDetail() {
 
         <Divider sx={{ my: { xs: 1.5, sm: 2 }, opacity: 0.3 }} />
 
-        {/* Ingredientes Mejorado */}
+        {/* Ingredientes Mejorado con animaciones */}
         <Box sx={{ px: { xs: 2, sm: 2.5, md: 3.5 }, py: { xs: 1.5, sm: 2, md: 2.5 } }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <Zap size={18} color={jetsnackColorPalette.brand} />
@@ -499,16 +573,34 @@ export function SnackDetail() {
                 key={ing}
                 sx={{
                   p: 1.5,
-                  borderRadius: '10px',
-                  background: jetsnackColorPalette.surface2,
-                  border: `1.5px solid ${jetsnackColorPalette.brand}40`,
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, ' + jetsnackColorPalette.surface2 + ' 0%, ' + jetsnackColorPalette.uiBackground + ' 100%)',
+                  border: `2px solid ${jetsnackColorPalette.brand}40`,
                   textAlign: 'center',
-                  transition: 'all 0.3s ease',
-                  animation: `fadeIn 0.5s ease ${idx * 0.08}s both`,
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  animation: `fadeInScale 0.6s ease ${idx * 0.1}s both`,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: '-50%',
+                    left: '-50%',
+                    width: '200%',
+                    height: '200%',
+                    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%)',
+                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
+                    pointerEvents: 'none',
+                  },
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    background: jetsnackColorPalette.brandLight,
+                    transform: 'translateY(-6px) scale(1.02)',
+                    background: 'linear-gradient(135deg, ' + jetsnackColorPalette.brandLight + ' 0%, rgba(255, 107, 53, 0.04) 100%)',
                     borderColor: jetsnackColorPalette.brand,
+                    boxShadow: `0 12px 24px ${jetsnackColorPalette.brand}20`,
+                    '&::before': {
+                      opacity: 1,
+                    }
                   }
                 }}
               >
@@ -516,7 +608,9 @@ export function SnackDetail() {
                   sx={{
                     fontWeight: 700,
                     color: jetsnackColorPalette.brand,
-                    fontSize: '0.9rem',
+                    fontSize: '0.95rem',
+                    position: 'relative',
+                    zIndex: 1,
                   }}
                 >
                   {ing}
@@ -528,7 +622,7 @@ export function SnackDetail() {
 
         <Divider sx={{ my: { xs: 1.5, sm: 2 }, opacity: 0.3 }} />
 
-        {/* Reseñas de Clientes */}
+        {/* Reseñas de Clientes Mejorado */}
         <Box sx={{ px: { xs: 2, sm: 2.5, md: 3.5 }, py: { xs: 1.5, sm: 2, md: 2.5 } }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <Star size={18} color={jetsnackColorPalette.brand} />
@@ -550,25 +644,45 @@ export function SnackDetail() {
               <Card
                 sx={{
                   p: 2,
-                  background: 'rgba(255, 107, 53, 0.04)',
-                  border: `1px solid rgba(255, 107, 53, 0.1)`,
+                  background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(255, 107, 53, 0.04) 100%)',
+                  border: `2px solid rgba(255, 107, 53, 0.15)`,
                   textAlign: 'center',
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'radial-gradient(circle at top right, rgba(255, 107, 53, 0.1), transparent)',
+                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
+                  },
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    border: `2px solid rgba(255, 107, 53, 0.3)`,
+                    boxShadow: `0 16px 40px rgba(255, 107, 53, 0.15)`,
+                    '&::before': {
+                      opacity: 1,
+                    }
+                  }
                 }}
               >
-                <Typography variant="h4" sx={{ fontWeight: 900, color: jetsnackColorPalette.brand, mb: 0.5 }}>
+                <Typography variant="h3" sx={{ fontWeight: 900, color: jetsnackColorPalette.brand, mb: 0.5 }}>
                   4.8
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 0.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      size={16}
+                      size={18}
                       fill={jetsnackColorPalette.brand}
                       color={jetsnackColorPalette.brand}
+                      style={{ marginRight: '4px', animation: `starPulse 1.5s ease-out ${i * 0.1}s both` }}
                     />
                   ))}
                 </Box>
-                <Typography variant="caption" sx={{ color: jetsnackColorPalette.textSecondary }}>
+                <Typography variant="caption" sx={{ color: jetsnackColorPalette.textSecondary, display: 'block' }}>
                   Basado en 1,247 reseñas
                 </Typography>
               </Card>
@@ -577,15 +691,34 @@ export function SnackDetail() {
               <Card
                 sx={{
                   p: 2,
-                  background: 'rgba(102, 204, 153, 0.04)',
-                  border: `1px solid rgba(102, 204, 153, 0.1)`,
+                  background: 'linear-gradient(135deg, rgba(102, 204, 153, 0.08) 0%, rgba(102, 204, 153, 0.04) 100%)',
+                  border: `2px solid rgba(102, 204, 153, 0.15)`,
                   textAlign: 'center',
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'radial-gradient(circle at top right, rgba(102, 204, 153, 0.1), transparent)',
+                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
+                  },
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    border: `2px solid rgba(102, 204, 153, 0.3)`,
+                    boxShadow: `0 16px 40px rgba(102, 204, 153, 0.15)`,
+                    '&::before': {
+                      opacity: 1,
+                    }
+                  }
                 }}
               >
                 <Typography variant="h4" sx={{ fontWeight: 900, color: '#66cc99', mb: 0.5 }}>
                   ✓ Recomendado
                 </Typography>
-                <Typography variant="body2" sx={{ color: jetsnackColorPalette.textSecondary, mb: 0.5 }}>
+                <Typography variant="body2" sx={{ color: jetsnackColorPalette.textSecondary, mb: 0.5, fontWeight: 600 }}>
                   94% lo recomendaría
                 </Typography>
                 <Typography variant="caption" sx={{ color: jetsnackColorPalette.textSecondary }}>
@@ -705,7 +838,7 @@ export function SnackDetail() {
           </IconButton>
         </JetsnackSurface>
 
-        {/* Botón Agregar al carrito mejorado */}
+        {/* Botón Agregar al carrito mejorado con más efectos */}
         <JetsnackButton
           fullWidth
           onClick={handleAddToCart}
@@ -719,7 +852,8 @@ export function SnackDetail() {
             boxShadow: `0 12px 32px rgba(255, 107, 53, 0.28)`,
             position: 'relative',
             overflow: 'hidden',
-            transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            border: '2px solid transparent',
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -727,18 +861,30 @@ export function SnackDetail() {
               left: '-100%',
               width: '100%',
               height: '100%',
-              background: 'rgba(255, 255, 255, 0.15)',
-              transition: 'left 0.4s ease',
+              background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent)',
+              transition: 'left 0.5s ease',
+            },
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              inset: 0,
+              background: 'radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
+              opacity: 0,
+              transition: 'opacity 0.3s ease',
             },
             '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: `0 16px 40px rgba(255, 107, 53, 0.35)`,
+              transform: 'translateY(-3px)',
+              boxShadow: `0 18px 48px rgba(255, 107, 53, 0.42), inset 0 2px 8px rgba(255, 255, 255, 0.2)`,
               '&::before': {
                 left: '100%',
+              },
+              '&::after': {
+                opacity: 1,
               }
             },
             '&:active': {
-              transform: 'translateY(0)',
+              transform: 'translateY(-1px)',
+              boxShadow: `0 8px 24px rgba(255, 107, 53, 0.35)`,
             }
           }}
         >

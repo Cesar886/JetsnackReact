@@ -1,6 +1,6 @@
 import { Box, Typography, Button, Snackbar, Alert, useMediaQuery, useTheme } from '@mui/material';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
-import { jetsnackGradients } from '../theme/JetsnackTheme';
+import { jetsnackGradients } from '../../theme/JetsnackTheme';
 
 export function NotificationPopup({ 
   open, 
